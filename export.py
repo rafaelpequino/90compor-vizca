@@ -1,4 +1,6 @@
 import os
+import sys
+from getpass import getpass
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -13,14 +15,21 @@ BASE_PERSONALIZADA = "3899392"
 
 def main() -> None:
 	try:
+		if getattr(sys, "frozen", False):
+			os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(
+				Path(sys._MEIPASS) / "ms-playwright"
+			)
+
 		load_dotenv()
 		usuario = os.getenv("COMPOR_USUARIO", "").strip()
 		senha = os.getenv("COMPOR_SENHA", "").strip()
 
+		if not usuario:
+			usuario = input("Usuário 90 Compor: ").strip()
+		if not senha:
+			senha = getpass("Senha 90 Compor: ")
 		if not usuario or not senha:
-			raise ValueError(
-				"Defina COMPOR_USUARIO e COMPOR_SENHA no arquivo .env antes de executar."
-			)
+			raise ValueError("Usuário e senha são obrigatórios.")
 
 		caminho_destino = input("Cole o caminho onde os arquivos serão salvos: ").strip()
 		if not caminho_destino:
